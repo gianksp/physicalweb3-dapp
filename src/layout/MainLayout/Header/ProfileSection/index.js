@@ -34,15 +34,20 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
+import BalanceCard from 'layout/MainLayout/Header/ProfileSection/BalanceCard';
 import useAuth from 'hooks/useAuth';
 import User1 from 'assets/images/users/user-round.svg';
-
 // assets
+
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons';
+import { useMoralis } from 'react-moralis';
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
+    const { logout, user } = useMoralis();
+    console.log(user);
     const theme = useTheme();
     const customization = useSelector((state) => state.customization);
     const navigate = useNavigate();
@@ -51,7 +56,7 @@ const ProfileSection = () => {
     const [value, setValue] = useState('');
     const [notification, setNotification] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
-    const { logout, user } = useAuth();
+    // const { logout, user } = useAuth();
     const [open, setOpen] = useState(false);
     /**
      * anchorRef is used on different componets and specifying one type leads to other components throwing an error
@@ -93,6 +98,18 @@ const ProfileSection = () => {
         prevOpen.current = open;
     }, [open]);
 
+    const displayUserInfo = () => {
+        const ethAddress = user.get('ethAddress');
+        const first = ethAddress.substring(0, 8);
+        const last = ethAddress.substr(-4);
+        return `${first}...${last}`;
+    };
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(user.get('ethAddress'));
+    };
+
+    console.log(user);
     return (
         <>
             <Chip
@@ -163,14 +180,21 @@ const ProfileSection = () => {
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
                                             <Stack direction="row" spacing={0.5} alignItems="center">
-                                                <Typography variant="h4">Good Morning,</Typography>
-                                                <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                    {user?.name}
-                                                </Typography>
+                                                {/* <Typography variant="h4">Welcome,</Typography> */}
+                                                <ListItemButton
+                                                    sx={{ borderRadius: `${customization.borderRadius}px` }}
+                                                    selected={selectedIndex === 4}
+                                                    onClick={copyToClipboard}
+                                                >
+                                                    <ListItemText primary={<Typography variant="h2">{displayUserInfo()}</Typography>} />
+                                                    <ListItemIcon>
+                                                        <ContentCopyIcon stroke={1} size="1.3rem" />
+                                                    </ListItemIcon>
+                                                </ListItemButton>
                                             </Stack>
-                                            <Typography variant="subtitle2">Project Admin</Typography>
+                                            {/* <Typography variant="subtitle2">Project Admin</Typography> */}
                                         </Stack>
-                                        <OutlinedInput
+                                        {/* <OutlinedInput
                                             sx={{ width: '100%', pr: 1, pl: 2, my: 2 }}
                                             id="input-search-profile"
                                             value={value}
@@ -185,12 +209,13 @@ const ProfileSection = () => {
                                             inputProps={{
                                                 'aria-label': 'weight'
                                             }}
-                                        />
+                                        /> */}
                                         <Divider />
                                     </Box>
                                     <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                                         <Box sx={{ p: 2 }}>
-                                            <UpgradePlanCard />
+                                            {/* <UpgradePlanCard /> */}
+                                            <BalanceCard />
                                             <Divider />
                                             <Card
                                                 sx={{

@@ -11,6 +11,7 @@ import LocalizationSection from './LocalizationSection';
 import MobileSection from './MobileSection';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
+import User from 'ui-component/extended/User';
 
 // assets
 import { IconMenu2 } from '@tabler/icons';
@@ -57,24 +58,25 @@ const Header = ({ handleLeftDrawerToggle }) => {
                 </ButtonBase>
             </Box>
 
-            {/* header search */}
+            {/* header search
             <SearchSection />
             <Box sx={{ flexGrow: 1 }} />
-            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ flexGrow: 1 }} />  */}
 
-            {/* live customization & localization */}
+            {/* live customization & localization
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <LocalizationSection />
-            </Box>
+            </Box>  */}
 
-            {/* notification & profile */}
-            <NotificationSection />
-            <ProfileSection />
+            {/* notification & profile
+            <NotificationSection />   */}
+            <Box sx={{ flexGrow: 1 }} />
+            <User />
 
-            {/* mobile header */}
+            {/* mobile header
             <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                 <MobileSection />
-            </Box>
+            </Box>  */}
         </>
     );
 };

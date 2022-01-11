@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function useConfig() {
+export default function useConfiguration() {
     const [config, loadConfig] = useState([]);
 
     useEffect(() => {

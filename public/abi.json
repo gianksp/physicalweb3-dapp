@@ -1,11 +1,18 @@
 {
-	"name": "MyApp",
-	"contract": "0xf33B9Be07bECc75a8A6c2c2307c0ce057dBeC899",
-	"networkName": "Fuji Testnet",
-	"chain": "43113",
-	"rpcUrl": "https://api.avax-test.network/ext/bc/C/rpc",
-	"currencySymbol": "AVAX",
-	"blockExplorerUrl": "https://testnet.snowtrace.io/",
+	"name": "My App Controller Title",
+	"network": {
+		"contract": "0xf33B9Be07bECc75a8A6c2c2307c0ce057dBeC899",
+		"imageUrl": "https://logowik.com/content/uploads/images/avalanche-coin-avax8592.jpg",
+		"name": "Fuji Testnet",
+		"id": "43113",
+		"rpcUrl": "https://api.avax-test.network/ext/bc/C/rpc",
+		"currencySymbol": "AVAX",
+		"blockExplorerUrl": "https://testnet.snowtrace.io/"
+	},
+	"about": {
+		"title": "How does it work?",
+		"description": "Ya ya orem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut Ut Ut Ut enif enif, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos reprehended veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa descent molls anim id est labours."
+	},
 	"abi": [
 		{
 			"inputs": [

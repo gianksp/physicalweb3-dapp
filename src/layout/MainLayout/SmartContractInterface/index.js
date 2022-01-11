@@ -2,13 +2,20 @@ import { useEffect, useState } from 'react';
 
 // material-ui
 import { Typography, Button, Grid, IconButton, Box, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
-import useConfig from 'utils/configHook';
-import { createTheme } from '@mui/material/styles';
+import useConfiguration from 'utils/hooks/useConfiguration';
+import { createTheme, styled } from '@mui/material/styles';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useMoralis } from 'react-moralis';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 const customTheme = createTheme({
     components: {
@@ -22,14 +29,47 @@ const customTheme = createTheme({
     }
 });
 
+const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+    border: `1px solid ${theme.palette.divider}`,
+    '&:not(:last-child)': {
+        borderBottom: 0
+    },
+    '&:before': {
+        display: 'none'
+    }
+}));
+
+const AccordionSummary = styled((props) => (
+    <MuiAccordionSummary expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />} {...props} />
+))(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+    flexDirection: 'row-reverse',
+    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+        transform: 'rotate(90deg)'
+    },
+    '& .MuiAccordionSummary-content': {
+        marginLeft: theme.spacing(1)
+    }
+}));
+
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+    padding: theme.spacing(2),
+    borderTop: '1px solid rgba(0, 0, 0, .125)'
+}));
+
 // ==============================|| SAMPLE PAGE ||============================== //
 
 const SmartContractInterface = () => {
-    const { Moralis, user } = useMoralis();
-    const { config = {} } = useConfig();
+    const { Moralis, user, isAuthenticated } = useMoralis();
+    const { config = {} } = useConfiguration();
     const [funcs, setFuncs] = useState([]);
     const [getInputs, setInputs] = useState({});
     const [getResponses, setResponses] = useState({});
+    const [expanded, setExpanded] = useState();
+
+    const handleChange = (panel) => (event, newExpanded) => {
+        setExpanded(newExpanded ? panel : false);
+    };
 
     const loadFunctions = (abi = []) => {
         const functions = [];
@@ -74,7 +114,9 @@ const SmartContractInterface = () => {
         navigator.clipboard.writeText(text);
     };
 
-    const getExplorerAddressUrl = (address) => `${config.blockExplorerUrl}address/${address}`;
+    const getExplorerAddressUrl = (address) => `${config?.network?.blockExplorerUrl}address/${address}`;
+
+    const getExplorerTxUrl = (address) => `${config?.network?.blockExplorerUrl}tx/${address}`;
 
     const displayMetadata = () => (
         <Grid item xs={12}>
@@ -122,7 +164,7 @@ const SmartContractInterface = () => {
         item.inputs.forEach((inputItem) => {
             const id = `${item.name}.${inputItem.name}`;
             inputs.push(
-                <FormControl variant="standard">
+                <FormControl variant="standard" fullWidth>
                     <InputLabel htmlFor={id}>{inputItem.name}</InputLabel>
                     <Input id={id} onChange={onInputChange} aria-describedby={`${id}-text`} />
                     <FormHelperText id={`${id}-text`}>{inputItem.type}</FormHelperText>
@@ -142,17 +184,21 @@ const SmartContractInterface = () => {
     const invokeSendFunction = async (fn) => {
         setResponse(fn.name, '');
         console.log('invoked send');
-        const userInputs = getInputs[fn.name];
-        const fnValues = userInputs ? Object.values(userInputs) : [];
-
-        const web3 = await Moralis.enableWeb3();
-
         let callStatus = {};
         try {
+            const userInputs = getInputs[fn.name];
+            const fnValues = userInputs ? Object.values(userInputs) : [];
+
+            const web3 = await Moralis.enableWeb3();
+
+            console.log(user);
+            console.log(isAuthenticated);
+            if (!isAuthenticated) await Moralis.authenticate();
+
             const encodedFunction = web3.eth.abi.encodeFunctionCall(fn, fnValues);
 
             const transactionParameters = {
-                to: config.address,
+                to: config.network.contract,
                 from: user.get('ethAddress'),
                 data: encodedFunction
             };
@@ -166,10 +212,9 @@ const SmartContractInterface = () => {
                 message: response
             };
         } catch (e) {
-            console.log(e.Error);
             callStatus = {
                 success: false,
-                message: JSON.stringify(e)
+                message: e.stack
             };
         } finally {
             setResponse(fn.name, callStatus);
@@ -185,22 +230,23 @@ const SmartContractInterface = () => {
         console.log('invoked read');
         const userInputs = getInputs[fn.name];
         const fnValues = userInputs ? Object.values(userInputs) : [];
-
-        const web3 = await Moralis.enableWeb3();
         let callStatus = {};
         try {
-            const NameContract = new web3.eth.Contract(config.abi, config.contract);
+            const web3 = await Moralis.enableWeb3();
+            const NameContract = new web3.eth.Contract(config.abi, config.network.contract);
             const response = await NameContract.methods[fn.name](...fnValues).call();
             callStatus = {
                 success: true,
                 message: response
             };
         } catch (e) {
+            console.log(e);
             callStatus = {
                 success: false,
-                message: JSON.stringify(e)
+                message: e.stack
             };
         } finally {
+            console.log(callStatus);
             setResponse(fn.name, callStatus);
         }
     };
@@ -223,17 +269,15 @@ const SmartContractInterface = () => {
         const status = getResponseStatus(name);
         switch (status) {
             case true:
-                targetColor = 'success.main';
+                targetColor = 'rgba(141, 255, 86, 0.26)';
                 break;
             case false:
-                targetColor = 'error.main';
+                targetColor = 'rgba(255, 101, 173, 0.26)';
                 break;
             default:
                 targetColor = 'white';
                 break;
         }
-        console.log(message);
-        console.log(status);
         // getResponseMessage(item.name) === null
         // ? 'white'
         // : getResponseStatus(item.name)
@@ -257,8 +301,6 @@ const SmartContractInterface = () => {
                 targetColor = 'black';
                 break;
         }
-        console.log(message);
-        console.log(status);
         // getResponseMessage(item.name) === null
         // ? 'white'
         // : getResponseStatus(item.name)
@@ -269,64 +311,185 @@ const SmartContractInterface = () => {
 
     const displayFunctions = () => {
         const functions = [];
-        funcs.forEach((item) => {
+        for (let i = 0; i < funcs.length; i += 1) {
+            const item = funcs[i];
             functions.push(
                 <Grid item xs={12}>
-                    <MainCard xs={12}>
-                        <FormControl variant="standard">
+                    <Accordion expanded={expanded === `panel${i}`} onChange={handleChange(`panel${i}`)} fullWidth>
+                        <AccordionSummary aria-controls={`panel${i}-content`} id={`panel${i}-header`}>
+                            <Grid item xs={9}>
+                                <Typography variant="h3" fontWeight="100">
+                                    {item.name}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={3} justifyContent="flex-end">
+                                <Chip label={item.stateMutability} color="primary" variant="outlined" size="small" width="100%" />
+                            </Grid>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ width: '100%' }}>
                             {displayInputs(item)}
-                            <Button variant="outlined" color={getButtonColor(item.stateMutability)} onClick={() => invokeFunction(item)}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color={getButtonColor(item.stateMutability)}
+                                onClick={() => invokeFunction(item)}
+                                sx={{ my: 3 }}
+                            >
                                 {item.name}
                             </Button>
-                            <Box
-                                sx={{
-                                    p: 2,
-                                    mt: 1,
-                                    backgroundColor: getResponseColor(item.name),
-                                    color: getResponseTextColor(item.name)
-                                }}
-                            >
-                                {getResponseMessage(item.name) && isAddresss(getResponseMessage(item.name)) ? (
-                                    <Grid container>
+                            <Box>
+                                {getResponseMessage(item.name) && (
+                                    <Grid
+                                        container
+                                        sx={{
+                                            p: 2,
+                                            border: `1px solid #ddd`,
+                                            backgroundColor: getResponseColor(item.name)
+                                        }}
+                                    >
                                         <Grid item xs={12}>
-                                            <Typography variant="body2">
-                                                {trimAddress(getResponseMessage(item.name))}
-                                                <IconButton
-                                                    aria-label="fingerprint"
-                                                    color="primary"
-                                                    onClick={() => copyToClipboard(getResponseMessage(item.name))}
-                                                >
-                                                    <ContentCopyIcon />
-                                                </IconButton>
+                                            <Typography variant="h6">
+                                                {getResponseStatus(item.name) ? 'Successful request' : 'Request failed'}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Typography
+                                                variant="body2"
+                                                fontWeight="100"
+                                                fontSize="0.8em"
+                                                style={{ wordWrap: 'break-word' }}
+                                            >
+                                                {getResponseMessage(item.name)}
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Button
                                                 variant="outlined"
                                                 size="small"
-                                                href={getExplorerAddressUrl(getResponseMessage(item.name))}
+                                                href={getExplorerTxUrl(getResponseMessage(item.name))}
                                                 target="_blank"
                                             >
                                                 View in explorer
                                             </Button>
+                                            <IconButton
+                                                aria-label="fingerprint"
+                                                color="primary"
+                                                onClick={() => copyToClipboard(getResponseMessage(item.name))}
+                                            >
+                                                <ContentCopyIcon />
+                                            </IconButton>
                                         </Grid>
                                     </Grid>
-                                ) : (
-                                    <Typography>{getResponseMessage(item.name)}</Typography>
                                 )}
                             </Box>
-                        </FormControl>
-                    </MainCard>
+                        </AccordionDetails>
+                    </Accordion>
                 </Grid>
             );
-        });
+        }
+        // funcs.forEach((item) => {
+        //     functions.push(
+        //         <Grid item xs={12}>
+        //             <MainCard xs={12}>
+        //                 {/* <a id="url" href="https://metamask.app.link/dapp/b286-86-45-255-5.ngrok.io">
+        //                     https://metamask.app.link/dapp/b286-86-45-255-5.ngrok.io
+        //     </a> */}
+        //                 <FormControl variant="standard">
+        //                     {displayInputs(item)}
+        //                     <Button variant="outlined" color={getButtonColor(item.stateMutability)} onClick={() => invokeFunction(item)}>
+        //                         {item.name}
+        //                     </Button>
+        //                     <Box
+        //                         sx={{
+        //                             p: 2,
+        //                             mt: 1,
+        //                             backgroundColor: getResponseColor(item.name),
+        //                             color: getResponseTextColor(item.name)
+        //                         }}
+        //                     >
+        //                         {getResponseMessage(item.name) && isAddresss(getResponseMessage(item.name)) ? (
+        //                             <Grid container>
+        //                                 <Grid item xs={12}>
+        //                                     <Typography variant="body2">
+        //                                         {trimAddress(getResponseMessage(item.name))}
+        //                                         <IconButton
+        //                                             aria-label="fingerprint"
+        //                                             color="primary"
+        //                                             onClick={() => copyToClipboard(getResponseMessage(item.name))}
+        //                                         >
+        //                                             <ContentCopyIcon />
+        //                                         </IconButton>
+        //                                     </Typography>
+        //                                 </Grid>
+        //                                 <Grid item xs={12}>
+        //                                     <Button
+        //                                         variant="outlined"
+        //                                         size="small"
+        //                                         href={getExplorerAddressUrl(getResponseMessage(item.name))}
+        //                                         target="_blank"
+        //                                     >
+        //                                         View in explorer
+        //                                     </Button>
+        //                                 </Grid>
+        //                             </Grid>
+        //                         ) : (
+        //                             <Typography>{getResponseMessage(item.name)}</Typography>
+        //                         )}
+        //                     </Box>
+        //                 </FormControl>
+        //             </MainCard>
+        //         </Grid>
+        //     );
+        // });
         return functions;
     };
 
-    return (
+    const legacy = (
         <Grid container>
             {config && displayMetadata()}
             {config && displayFunctions()}
+        </Grid>
+    );
+
+    return (
+        <Grid container>
+            {displayFunctions()}
+            {/* <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+                    <Typography>Collapsible Group Item #1</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
+                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
+                        blandit leo lobortis eget.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+                <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
+                    <Typography>Collapsible Group Item #2</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
+                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
+                        amet blandit leo lobortis eget.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+                <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
+                    <Typography>Collapsible Group Item #3</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
+                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
+                        amet blandit leo lobortis eget.
+                    </Typography>
+                </AccordionDetails>
+    </Accordion> */}
         </Grid>
     );
 };

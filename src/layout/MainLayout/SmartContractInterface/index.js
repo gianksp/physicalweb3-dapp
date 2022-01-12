@@ -16,6 +16,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useMoralis } from 'react-moralis';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 const customTheme = createTheme({
     components: {
@@ -66,6 +68,7 @@ const SmartContractInterface = () => {
     const [getInputs, setInputs] = useState({});
     const [getResponses, setResponses] = useState({});
     const [expanded, setExpanded] = useState();
+    const [clipboardValues, setClipboardValues] = useState({});
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
@@ -149,11 +152,7 @@ const SmartContractInterface = () => {
         return false;
     };
 
-    const onInputChange = (e) => {
-        const components = e.target.id.split('.');
-        const funKey = components[0];
-        const attrKey = components[1];
-        const attrValue = e.target.value;
+    const setFieldValue = (funKey, attrKey, attrValue) => {
         const inputs = getInputs;
         const currentDefinition = inputs[funKey] ? inputs[funKey] : {};
         currentDefinition[attrKey] = attrValue;
@@ -161,16 +160,67 @@ const SmartContractInterface = () => {
         setInputs(inputs);
     };
 
+    const onInputChange = (e) => {
+        const components = e.target.id.split('.');
+        const funKey = components[0];
+        const attrKey = components[1];
+        const attrValue = e.target.value;
+        setFieldValue(funKey, attrKey, attrValue);
+    };
+
+    const fieldComponentId = (item, inputItem) => `${item.name}.${inputItem.name}`;
+
+    const pasteFromClipboard = async (id) => {
+        const text = await navigator.clipboard.readText();
+        const val = {};
+        val[`${id}`] = text;
+        setClipboardValues(val);
+        const comps = id.split('.');
+        setFieldValue(comps[0], comps[1], text);
+    };
+
+    const pasteFromWallet = async (id) => {
+        if (!isAuthenticated) {
+            await Moralis.authenticate();
+        }
+        const val = {};
+        val[`${id}`] = user.get('ethAddress');
+        setClipboardValues(val);
+        const comps = id.split('.');
+        setFieldValue(comps[0], comps[1], user.get('ethAddress'));
+    };
+
+    const utilsButtons = (id, type) => (
+        <Box component="span" sx={{ display: 'flex' }}>
+            {type === 'address' && (
+                <IconButton aria-label="paste" color="primary" size="small" position="end">
+                    <AccountBalanceWalletIcon position="end" onClick={() => pasteFromWallet(id)} />
+                </IconButton>
+            )}
+            <IconButton aria-label="paste" color="primary" size="small" position="end">
+                <ContentPasteIcon position="end" onClick={() => pasteFromClipboard(id)} />
+            </IconButton>
+        </Box>
+    );
+
     const displayInputs = (item) => {
         const inputs = [];
         item.inputs.forEach((inputItem) => {
-            const id = `${item.name}.${inputItem.name}`;
+            const id = fieldComponentId(item, inputItem);
             inputs.push(
-                <FormControl variant="standard" fullWidth>
-                    <InputLabel htmlFor={id}>{inputItem.name}</InputLabel>
-                    <Input id={id} onChange={onInputChange} aria-describedby={`${id}-text`} />
-                    <FormHelperText id={`${id}-text`}>{inputItem.type}</FormHelperText>
-                </FormControl>
+                <Grid container>
+                    <FormControl variant="standard" fullWidth>
+                        <InputLabel htmlFor={id}>{inputItem.name}</InputLabel>
+                        <Input
+                            id={id}
+                            onChange={onInputChange}
+                            aria-describedby={`${id}-text`}
+                            endAdornment={utilsButtons(id, inputItem.type)}
+                            value={clipboardValues[id]}
+                        />
+                        <FormHelperText id={`${id}-text`}>{inputItem.type}</FormHelperText>
+                    </FormControl>
+                </Grid>
             );
         });
         return inputs;
@@ -317,7 +367,7 @@ const SmartContractInterface = () => {
             const item = funcs[i];
             functions.push(
                 <Grid item xs={12}>
-                    <Accordion expanded={expanded === `panel${i}`} onChange={handleChange(`panel${i}`)} fullWidth>
+                    <Accordion expanded={expanded === `panel${i}`} onChange={handleChange(`panel${i}`)}>
                         <AccordionSummary aria-controls={`panel${i}-content`} id={`panel${i}-header`}>
                             <Grid item xs={9}>
                                 <Typography variant="h3" fontWeight="100">

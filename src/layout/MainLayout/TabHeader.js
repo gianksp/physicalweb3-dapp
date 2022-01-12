@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { Box, Grid } from '@mui/material';
 import About from 'layout/MainLayout/About';
 import SmartContractInterface from 'layout/MainLayout/SmartContractInterface';
+import useConfiguration from 'utils/hooks/useConfiguration';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -46,6 +47,7 @@ function a11yProps(index) {
 export default function FullWidthTabs() {
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
+    const { config } = useConfiguration();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -58,7 +60,7 @@ export default function FullWidthTabs() {
     return (
         <Box>
             <Grid container>
-                <AppBar position="static">
+                <AppBar position="static" sx={{ backgroundColor: config?.theme?.primary, color: config?.theme?.secondary }}>
                     <Tabs
                         value={value}
                         onChange={handleChange}

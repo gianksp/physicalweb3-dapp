@@ -114,9 +114,11 @@ const SmartContractInterface = () => {
         navigator.clipboard.writeText(text);
     };
 
-    const getExplorerAddressUrl = (address) => `${config?.network?.blockExplorerUrl}address/${address}`;
-
-    const getExplorerTxUrl = (address) => `${config?.network?.blockExplorerUrl}tx/${address}`;
+    const getExplorerAddressUrl = (address) => {
+        if (!config || !address) return '';
+        const prefix = address.length > 60 ? 'tx' : 'address';
+        return `${config?.network?.blockExplorerUrl}${prefix}/${address}`;
+    };
 
     const displayMetadata = () => (
         <Grid item xs={12}>
@@ -366,7 +368,7 @@ const SmartContractInterface = () => {
                                             <Button
                                                 variant="outlined"
                                                 size="small"
-                                                href={getExplorerTxUrl(getResponseMessage(item.name))}
+                                                href={getExplorerAddressUrl(getResponseMessage(item.name))}
                                                 target="_blank"
                                             >
                                                 View in explorer

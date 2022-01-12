@@ -28,7 +28,7 @@ const About = () => {
 
     return (
         <Grid item sx={{ p: 0, m: 0 }} xs={12}>
-            <Container sx={{ p: 0 }}>
+            <Container sx={{ maxWidth: '100%' }} maxWidth={false} disableGutters>
                 <Grid item xs={12} sx={{ p: 0, m: 0 }}>
                     <Box
                         direction="column"

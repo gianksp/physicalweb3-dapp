@@ -61,7 +61,8 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                 p: 2,
                 bgcolor: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.grey[50],
                 border: theme.palette.mode === 'dark' ? 'none' : '1px solid',
-                borderColor: theme.palette.grey[100]
+                borderColor: theme.palette.grey[100],
+                width: '100%'
             }}
         >
             <Grid container spacing={gridSpacing}>

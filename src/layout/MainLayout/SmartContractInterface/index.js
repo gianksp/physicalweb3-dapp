@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 // material-ui
 import { Typography, Button, Grid, IconButton, Box, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
 import MuiAccordion from '@mui/material/Accordion';
@@ -18,6 +19,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import SaveIcon from '@mui/icons-material/Save';
 
 const customTheme = createTheme({
     components: {
@@ -69,6 +71,7 @@ const SmartContractInterface = () => {
     const [getResponses, setResponses] = useState({});
     const [expanded, setExpanded] = useState();
     const [clipboardValues, setClipboardValues] = useState({});
+    const [isLoading, setLoading] = useState();
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
@@ -238,6 +241,7 @@ const SmartContractInterface = () => {
         console.log('invoked send');
         let callStatus = {};
         try {
+            setLoading(fn.name);
             const userInputs = getInputs[fn.name];
             const fnValues = userInputs ? Object.values(userInputs) : [];
 
@@ -270,6 +274,7 @@ const SmartContractInterface = () => {
             };
         } finally {
             setResponse(fn.name, callStatus);
+            setLoading();
         }
     };
 
@@ -284,6 +289,7 @@ const SmartContractInterface = () => {
         const fnValues = userInputs ? Object.values(userInputs) : [];
         let callStatus = {};
         try {
+            setLoading(fn.name);
             const web3 = await Moralis.enableWeb3();
             const NameContract = new web3.eth.Contract(config.abi, config.network.contract);
             const response = await NameContract.methods[fn.name](...fnValues).call();
@@ -300,6 +306,7 @@ const SmartContractInterface = () => {
         } finally {
             console.log(callStatus);
             setResponse(fn.name, callStatus);
+            setLoading();
         }
     };
 
@@ -380,15 +387,22 @@ const SmartContractInterface = () => {
                         </AccordionSummary>
                         <AccordionDetails sx={{ width: '100%' }}>
                             {displayInputs(item)}
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color={getButtonColor(item.stateMutability)}
-                                onClick={() => invokeFunction(item)}
-                                sx={{ my: 3 }}
-                            >
-                                {item.name}
-                            </Button>
+                            {isLoading !== item.name && (
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color={getButtonColor(item.stateMutability)}
+                                    onClick={() => invokeFunction(item)}
+                                    sx={{ my: 3 }}
+                                >
+                                    {item.name}
+                                </Button>
+                            )}
+                            {isLoading === item.name && (
+                                <LoadingButton fullWidth loading variant="outlined" sx={{ my: 3 }}>
+                                    {item.name}
+                                </LoadingButton>
+                            )}
                             <Box>
                                 {getResponseMessage(item.name) && (
                                     <Grid
@@ -401,7 +415,7 @@ const SmartContractInterface = () => {
                                     >
                                         <Grid item xs={12}>
                                             <Typography variant="h6">
-                                                {getResponseStatus(item.name) ? 'Successful request' : 'Request failed'}
+                                                {getResponseStatus(item.name) ? 'Response' : 'Request failed'}
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={12}>

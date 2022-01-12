@@ -42,7 +42,7 @@ const About = () => {
                         <Box
                             sx={{
                                 height: 175,
-                                backgroundImage: "url('https://upload.wikimedia.org/wikipedia/en/6/62/Kermit_the_Frog.jpg')",
+                                backgroundImage: `url(${config?.about?.imageUrl})`,
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
                                 verticalAlign: 'middle',
@@ -64,7 +64,7 @@ const About = () => {
                             style={{ height: 175, color: 'white' }}
                         >
                             <Typography variant="h2" color="white" component="span">
-                                {config.name}
+                                {config?.about?.appName}
                             </Typography>
                         </Grid>
                     </Box>

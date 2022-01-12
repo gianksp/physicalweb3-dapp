@@ -239,7 +239,9 @@ const SmartContractInterface = () => {
     const invokeSendFunction = async (fn) => {
         setResponse(fn.name, '');
         console.log('invoked send');
-        let callStatus = {};
+        let callStatus = {
+            success: false
+        };
         try {
             setLoading(fn.name);
             const userInputs = getInputs[fn.name];
@@ -247,8 +249,6 @@ const SmartContractInterface = () => {
 
             const web3 = await Moralis.enableWeb3();
 
-            console.log(user);
-            console.log(isAuthenticated);
             if (!isAuthenticated) await Moralis.authenticate();
 
             const encodedFunction = web3.eth.abi.encodeFunctionCall(fn, fnValues);
@@ -268,9 +268,10 @@ const SmartContractInterface = () => {
                 message: response
             };
         } catch (e) {
+            const errMsg = e.stack;
             callStatus = {
                 success: false,
-                message: e.stack
+                message: errMsg
             };
         } finally {
             setResponse(fn.name, callStatus);

@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: pw3app
+    image: pw3app
+    build:
+      context: .
+      target: production

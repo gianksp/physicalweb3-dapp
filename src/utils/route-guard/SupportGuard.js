@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // project imports
 import { useEffect } from 'react';
 import { useMoralis } from 'react-moralis';
-import useConfiguration from 'utils/hooks/useConfiguration';
+import useConfiguration from 'hooks/useConfiguration';
 
 // ==============================|| AUTH GUARD ||============================== //
 

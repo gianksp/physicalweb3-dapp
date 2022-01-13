@@ -16,7 +16,7 @@ import { drawerWidth } from 'store/constant';
 import { SET_MENU } from 'store/actions';
 
 import MainCard from 'ui-component/cards/MainCard';
-import useConfiguration from 'utils/hooks/useConfiguration';
+import useConfiguration from 'hooks/useConfiguration';
 
 // assets
 import { IconChevronRight } from '@tabler/icons';

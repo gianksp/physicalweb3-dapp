@@ -6,12 +6,6 @@ import { Avatar, Box, ButtonBase } from '@mui/material';
 
 // project imports
 import LogoSection from '../LogoSection';
-import SearchSection from './SearchSection';
-import LocalizationSection from './LocalizationSection';
-import MobileSection from './MobileSection';
-import ProfileSection from './ProfileSection';
-import NotificationSection from './NotificationSection';
-import User from 'ui-component/extended/User';
 
 // assets
 import { IconMenu2 } from '@tabler/icons';
@@ -71,7 +65,6 @@ const Header = ({ handleLeftDrawerToggle }) => {
             {/* notification & profile
             <NotificationSection />   */}
             <Box sx={{ flexGrow: 1 }} />
-            <User />
 
             {/* mobile header
             <Box sx={{ display: { xs: 'block', sm: 'none' } }}>

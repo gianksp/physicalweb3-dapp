@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 // project imports
-import useAuth from 'hooks/useAuth';
 import { useEffect } from 'react';
 import { useMoralis } from 'react-moralis';
 import useConfiguration from 'utils/hooks/useConfiguration';
@@ -14,8 +13,7 @@ import useConfiguration from 'utils/hooks/useConfiguration';
  * @param {PropTypes.node} children children element/node
  */
 const SupportGuard = ({ children }) => {
-    const { Moralis } = useMoralis();
-    const { isLoggedIn } = useAuth();
+    const { Moralis, isAuthenticated } = useMoralis();
     const navigate = useNavigate();
     const { config } = useConfiguration();
 
@@ -85,7 +83,7 @@ const SupportGuard = ({ children }) => {
 
         // Is wrong chain?
         validateChain();
-    }, [isLoggedIn, navigate, config]);
+    }, [isAuthenticated, navigate, config]);
 
     return children;
 };

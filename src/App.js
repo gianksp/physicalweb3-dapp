@@ -15,10 +15,6 @@ import NavigationScroll from 'layout/NavigationScroll';
 // import RTLLayout from 'ui-component/RTLLayout';
 import Snackbar from 'ui-component/extended/Snackbar';
 import { MoralisProvider } from 'react-moralis';
-// auth provider
-import { FirebaseProvider } from 'contexts/FirebaseContext';
-// import { JWTProvider } from 'contexts/JWTContext';
-// import { Auth0Provider } from 'contexts/Auth0Context';
 
 // ==============================|| APP ||============================== //
 console.log(process.env.REACT_APP_MORALIS_APP_ID);
@@ -36,12 +32,10 @@ const App = () => {
                     {/* <RTLLayout> */}
                     <Locales>
                         <NavigationScroll>
-                            <FirebaseProvider>
-                                <>
-                                    <Routes />
-                                    <Snackbar />
-                                </>
-                            </FirebaseProvider>
+                            <>
+                                <Routes />
+                                <Snackbar />
+                            </>
                         </NavigationScroll>
                     </Locales>
                     {/* </RTLLayout> */}

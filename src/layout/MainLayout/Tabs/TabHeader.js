@@ -7,9 +7,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import { Box, Grid } from '@mui/material';
-import About from 'layout/MainLayout/About';
-import SmartContractInterface from 'layout/MainLayout/SmartContractInterface';
-import useConfiguration from 'utils/hooks/useConfiguration';
+import AboutTab from 'layout/MainLayout/Tabs/AboutTab';
+import SmartContracTab from 'layout/MainLayout/Tabs/SmartContracTab';
+import useConfiguration from 'hooks/useConfiguration';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -75,10 +75,10 @@ export default function FullWidthTabs() {
                 </AppBar>
                 <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={value} onChangeIndex={handleChangeIndex}>
                     <TabPanel value={value} index={0} dir={theme.direction}>
-                        <About />
+                        <AboutTab />
                     </TabPanel>
                     <TabPanel value={value} index={1} dir={theme.direction}>
-                        <SmartContractInterface />
+                        <SmartContracTab />
                     </TabPanel>
                 </SwipeableViews>
             </Grid>

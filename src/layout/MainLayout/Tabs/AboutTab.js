@@ -4,7 +4,7 @@ import { Typography, Grid, Box, Container } from '@mui/material';
 import useConfiguration from 'hooks/useConfiguration';
 
 import NetworkFragment from 'layout/MainLayout/Fragments/NetworkFragment';
-import ConfigurationFragment from 'layout/MainLayout/Fragments/ConfigurationFragment';
+import AppIdFragment from 'layout/MainLayout/Fragments/AppIdFragment';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -83,7 +83,7 @@ const AboutTab = () => {
                 <NetworkFragment />
             </Grid>
             <Grid container sx={{ p: 2 }}>
-                <ConfigurationFragment />
+                <AppIdFragment />
             </Grid>
         </Grid>
     );

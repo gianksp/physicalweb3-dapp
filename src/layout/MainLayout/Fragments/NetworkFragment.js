@@ -1,35 +1,22 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Button, Card, Grid, Menu, MenuItem, Typography, IconButton } from '@mui/material';
+import { Button, Card, Grid, Typography, IconButton } from '@mui/material';
 
 // project imports
 import Avatar from 'ui-component/extended/Avatar';
 import { gridSpacing } from 'store/constant';
 
 // assets
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined';
-import ChatBubbleTwoToneIcon from '@mui/icons-material/ChatBubbleTwoTone';
-import PhoneTwoToneIcon from '@mui/icons-material/PhoneTwoTone';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import useConfiguration from 'hooks/useConfiguration';
 
 // ==============================|| USER CONTACT CARD ||============================== //
 
-const Network = ({ avatar, contact, email, name, location, onActive, role }) => {
+const NetworkFragment = () => {
     const { config } = useConfiguration();
     const theme = useTheme();
-
-    const [anchorEl, setAnchorEl] = useState(null);
-    const handleClick = (event) => {
-        setAnchorEl(event?.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(
@@ -72,16 +59,8 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                 </Grid>
                 <Grid item xs={4}>
                     <Grid container>
-                        <Grid
-                            item
-                            xs
-                            zeroMinWidth
-                            onClick={() => {
-                                onActive();
-                            }}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <Avatar alt={name} size="lg" src={config?.network?.imageUrl} sx={{ width: 72, height: 72 }} />
+                        <Grid item xs zeroMinWidth style={{ cursor: 'pointer' }}>
+                            <Avatar size="lg" src={config?.network?.imageUrl} sx={{ width: 72, height: 72 }} />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -91,7 +70,7 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                         {config?.network?.rpcUrl}
                         <IconButton
                             color="primary"
-                            aria-label="add to shopping cart"
+                            aria-label="copy to clipboard"
                             size="small"
                             onClick={() => copyToClipboard(config?.network?.rpcUrl)}
                         >
@@ -105,7 +84,7 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                         {config?.network?.blockExplorerUrl}
                         <IconButton
                             color="primary"
-                            aria-label="add to shopping cart"
+                            aria-label="copy to clipboard"
                             size="small"
                             onClick={() => copyToClipboard(config?.network?.blockExplorerUrl)}
                         >
@@ -119,7 +98,7 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                         {trimAddress(config?.network?.contract)}
                         <IconButton
                             color="primary"
-                            aria-label="add to shopping cart"
+                            aria-label="copy to clipboard"
                             size="small"
                             onClick={() => copyToClipboard(config?.network?.contract)}
                         >
@@ -133,14 +112,4 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
     );
 };
 
-Network.propTypes = {
-    avatar: PropTypes.string,
-    contact: PropTypes.string,
-    email: PropTypes.string,
-    location: PropTypes.string,
-    name: PropTypes.string,
-    onActive: PropTypes.func,
-    role: PropTypes.string
-};
-
-export default Network;
+export default NetworkFragment;

@@ -1,7 +1,7 @@
 // material-ui
 import { Typography } from '@mui/material';
 
-import useConfiguration from 'utils/hooks/useConfiguration';
+import useConfiguration from 'hooks/useConfiguration';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';

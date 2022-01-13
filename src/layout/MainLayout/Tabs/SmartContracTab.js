@@ -248,6 +248,8 @@ const SmartContractTab = () => {
             const fnValues = userInputs ? Object.values(userInputs) : [];
 
             const web3 = await Moralis.enableWeb3();
+            console.log(isAuthenticated);
+            console.log(user);
 
             if (!isAuthenticated) await Moralis.authenticate();
 

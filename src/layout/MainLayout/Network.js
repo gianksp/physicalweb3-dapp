@@ -68,7 +68,7 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
             <Grid container spacing={gridSpacing}>
                 <Grid item xs={8}>
                     <Typography variant="caption">Network</Typography>
-                    <Typography variant="h3">{config?.network?.name}</Typography>
+                    <Typography variant="h5">{config?.network?.name}</Typography>
                     <Typography variant="caption">Chain Id</Typography>
                     <Typography variant="h6">{config?.network?.id}</Typography>
                     <Typography variant="caption">Currency Symbol</Typography>
@@ -119,7 +119,7 @@ const Network = ({ avatar, contact, email, name, location, onActive, role }) => 
                 </Grid>
                 <Grid item xs={12}>
                     <Typography variant="caption">Smart Contract</Typography>
-                    <Typography variant="h4">
+                    <Typography variant="h5">
                         {trimAddress(config?.network?.contract)}
                         <IconButton
                             color="primary"

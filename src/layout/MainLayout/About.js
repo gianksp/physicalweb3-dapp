@@ -7,6 +7,7 @@ import useConfiguration from 'utils/hooks/useConfiguration';
 import MainCard from 'ui-component/cards/MainCard';
 
 import Network from 'layout/MainLayout/Network';
+import Configuration from 'layout/MainLayout/Configuration';
 import Options from 'views/deeplink-page/Options';
 
 // ==============================|| SAMPLE PAGE ||============================== //
@@ -84,6 +85,9 @@ const About = () => {
             </Grid>
             <Grid container sx={{ p: 2 }}>
                 <Network />
+            </Grid>
+            <Grid container sx={{ p: 2 }}>
+                <Configuration />
             </Grid>
         </Grid>
     );

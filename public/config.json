@@ -1,7 +1,7 @@
 {
 	"theme": {
-		"primary": "primary",
-		"secondary": "#fff"
+		"primary": "#2196f3",
+		"secondary": "#ffffff"
 	},
 	"network": {
 		"contract": "0x995EFB49f7ACD7f0D0770fD3a846Ee464577F589",

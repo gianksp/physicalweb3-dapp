@@ -67,6 +67,7 @@ const SmartContractTab = () => {
     const { Moralis, user, isAuthenticated } = useMoralis();
     const { config = {} } = useConfiguration();
     const [funcs, setFuncs] = useState([]);
+    const [valueTransfer, setValueTransfer] = useState(0);
     const [getInputs, setInputs] = useState({});
     const [getResponses, setResponses] = useState({});
     const [expanded, setExpanded] = useState();
@@ -242,24 +243,28 @@ const SmartContractTab = () => {
         let callStatus = {
             success: false
         };
+
         try {
             setLoading(fn.name);
             const userInputs = getInputs[fn.name];
             const fnValues = userInputs ? Object.values(userInputs) : [];
 
+            // If we use amount as field!
             const web3 = await Moralis.enableWeb3();
-            console.log(isAuthenticated);
-            console.log(user);
 
             if (!isAuthenticated) await Moralis.authenticate();
 
             const encodedFunction = web3.eth.abi.encodeFunctionCall(fn, fnValues);
-
             const transactionParameters = {
                 to: config.network.contract,
                 from: user.get('ethAddress'),
                 data: encodedFunction
             };
+
+            if (valueTransfer) {
+                const weiValue = parseInt(web3.utils.toWei(valueTransfer.toString(), 'ether'), 10).toString(16);
+                transactionParameters.value = weiValue;
+            }
 
             const response = await window.ethereum.request({
                 method: 'eth_sendTransaction',
@@ -522,6 +527,18 @@ const SmartContractTab = () => {
 
     return (
         <Grid container>
+            <Grid container sx={{ p: 2, border: '1px solid #ddd', m: 2, borderRadius: 2 }}>
+                <FormControl variant="standard" fullWidth>
+                    <InputLabel htmlFor="valueTransfer">Amount in {config?.network?.currencySymbol}</InputLabel>
+                    <Input
+                        id="valueTransfer"
+                        onChange={(e) => setValueTransfer(e.target.value)}
+                        aria-describedby="valueTransfer"
+                        value={valueTransfer}
+                    />
+                    <FormHelperText id="valueTransfer">Optional field to include additional value to transact</FormHelperText>
+                </FormControl>
+            </Grid>
             {displayFunctions()}
             {/* <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
                 <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">

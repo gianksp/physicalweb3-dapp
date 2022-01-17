@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useMoralis, useMoralisWeb3ApiCall, useMoralisWeb3Api, useMoralisQuery, useMoralisCloudFunction } from 'react-moralis';
-import useConfiguration from 'utils/hooks/useConfiguration';
+import useConfiguration from 'hooks/useConfiguration';
 
 const useWallet = () => {
     const { config = {} } = useConfiguration();

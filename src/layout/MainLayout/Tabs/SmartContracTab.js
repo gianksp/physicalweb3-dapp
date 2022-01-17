@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 // material-ui
-import { Typography, Button, Grid, IconButton, Box, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
+import { Paper, Typography, Button, Grid, IconButton, Box, FormControl, FormHelperText, Input, InputLabel } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
 
@@ -12,26 +12,13 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import useConfiguration from 'hooks/useConfiguration';
-import { createTheme, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useMoralis } from 'react-moralis';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import SaveIcon from '@mui/icons-material/Save';
-
-const customTheme = createTheme({
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                outlined: {
-                    backgroundColor: 'green'
-                }
-            }
-        }
-    }
-});
+import useCovalent from 'hooks/useCovalent';
 
 const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
     border: `1px solid ${theme.palette.divider}`,
@@ -73,6 +60,7 @@ const SmartContractTab = () => {
     const [expanded, setExpanded] = useState();
     const [clipboardValues, setClipboardValues] = useState({});
     const [isLoading, setLoading] = useState();
+    const { tickerPrice } = useCovalent();
 
     const handleChange = (panel) => (event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
@@ -148,13 +136,6 @@ const SmartContractTab = () => {
             </MainCard>
         </Grid>
     );
-
-    const isAddresss = (value = '') => {
-        if (typeof value === 'string' || value instanceof String) {
-            return value.startsWith('0x');
-        }
-        return false;
-    };
 
     const setFieldValue = (funKey, attrKey, attrValue) => {
         const inputs = getInputs;
@@ -353,29 +334,6 @@ const SmartContractTab = () => {
         return targetColor;
     };
 
-    const getResponseTextColor = (name) => {
-        let targetColor;
-        const message = getResponseMessage(name);
-        const status = getResponseStatus(name);
-        switch (status) {
-            case true:
-                targetColor = 'white';
-                break;
-            case false:
-                targetColor = 'white';
-                break;
-            default:
-                targetColor = 'black';
-                break;
-        }
-        // getResponseMessage(item.name) === null
-        // ? 'white'
-        // : getResponseStatus(item.name)
-        // ? 'success.light'
-        // : 'error.light'
-        return targetColor;
-    };
-
     const displayFunctions = () => {
         const functions = [];
         for (let i = 0; i < funcs.length; i += 1) {
@@ -461,73 +419,12 @@ const SmartContractTab = () => {
                 </Grid>
             );
         }
-        // funcs.forEach((item) => {
-        //     functions.push(
-        //         <Grid item xs={12}>
-        //             <MainCard xs={12}>
-        //                 {/* <a id="url" href="https://metamask.app.link/dapp/b286-86-45-255-5.ngrok.io">
-        //                     https://metamask.app.link/dapp/b286-86-45-255-5.ngrok.io
-        //     </a> */}
-        //                 <FormControl variant="standard">
-        //                     {displayInputs(item)}
-        //                     <Button variant="outlined" color={getButtonColor(item.stateMutability)} onClick={() => invokeFunction(item)}>
-        //                         {item.name}
-        //                     </Button>
-        //                     <Box
-        //                         sx={{
-        //                             p: 2,
-        //                             mt: 1,
-        //                             backgroundColor: getResponseColor(item.name),
-        //                             color: getResponseTextColor(item.name)
-        //                         }}
-        //                     >
-        //                         {getResponseMessage(item.name) && isAddresss(getResponseMessage(item.name)) ? (
-        //                             <Grid container>
-        //                                 <Grid item xs={12}>
-        //                                     <Typography variant="body2">
-        //                                         {trimAddress(getResponseMessage(item.name))}
-        //                                         <IconButton
-        //                                             aria-label="fingerprint"
-        //                                             color="primary"
-        //                                             onClick={() => copyToClipboard(getResponseMessage(item.name))}
-        //                                         >
-        //                                             <ContentCopyIcon />
-        //                                         </IconButton>
-        //                                     </Typography>
-        //                                 </Grid>
-        //                                 <Grid item xs={12}>
-        //                                     <Button
-        //                                         variant="outlined"
-        //                                         size="small"
-        //                                         href={getExplorerAddressUrl(getResponseMessage(item.name))}
-        //                                         target="_blank"
-        //                                     >
-        //                                         View in explorer
-        //                                     </Button>
-        //                                 </Grid>
-        //                             </Grid>
-        //                         ) : (
-        //                             <Typography>{getResponseMessage(item.name)}</Typography>
-        //                         )}
-        //                     </Box>
-        //                 </FormControl>
-        //             </MainCard>
-        //         </Grid>
-        //     );
-        // });
         return functions;
     };
 
-    const legacy = (
-        <Grid container>
-            {config && displayMetadata()}
-            {config && displayFunctions()}
-        </Grid>
-    );
-
-    return (
-        <Grid container>
-            <Grid container sx={{ p: 2, border: '1px solid #ddd', m: 2, borderRadius: 2 }}>
+    const inputVal = (
+        <Grid item xs={6} sx={{ p: 1 }}>
+            <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 105 }}>
                 <FormControl variant="standard" fullWidth>
                     <InputLabel htmlFor="valueTransfer">Amount in {config?.network?.currencySymbol}</InputLabel>
                     <Input
@@ -536,46 +433,39 @@ const SmartContractTab = () => {
                         aria-describedby="valueTransfer"
                         value={valueTransfer}
                     />
-                    <FormHelperText id="valueTransfer">Optional field to include additional value to transact</FormHelperText>
+                    <FormHelperText id="valueTransfer-desc">Value to send</FormHelperText>
                 </FormControl>
+            </Box>
+        </Grid>
+    );
+
+    const usVal = (
+        <Grid item xs={6} sx={{ p: 1 }}>
+            <Box
+                sx={{
+                    border: '1px solid #ddd',
+                    borderRadius: 2,
+                    p: 2,
+                    minHeight: 105,
+                    background: config.theme.primary,
+                    color: config.theme.secondary
+                }}
+            >
+                <Typography fontSize="0.7em">
+                    1 {config?.network?.currencySymbol} ~= {tickerPrice} USD
+                </Typography>
+                <Typography fontSize="2.2em">${parseFloat(valueTransfer * tickerPrice).toFixed(2)}</Typography>
+            </Box>
+        </Grid>
+    );
+
+    return (
+        <Grid container>
+            <Grid container>
+                {inputVal}
+                {usVal}
             </Grid>
             {displayFunctions()}
-            {/* <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-                    <Typography>Collapsible Group Item #1</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                        blandit leo lobortis eget.
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-                <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-                    <Typography>Collapsible Group Item #2</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                        amet blandit leo lobortis eget.
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-                <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-                    <Typography>Collapsible Group Item #3</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo
-                        lobortis eget. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet
-                        amet blandit leo lobortis eget.
-                    </Typography>
-                </AccordionDetails>
-    </Accordion> */}
         </Grid>
     );
 };

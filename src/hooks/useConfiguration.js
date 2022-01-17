@@ -7,8 +7,10 @@ export default function useConfiguration() {
     const { Moralis } = useMoralis();
 
     const getAppIdFromQueryParams = () => {
-        const urlParams = new URLSearchParams(window.location.search);
+        console.log(window.location.href);
+        const urlParams = new URLSearchParams(window.location.href);
         const appId = urlParams.get('appId');
+        console.log(appId);
         return appId;
     };
 
@@ -49,5 +51,5 @@ export default function useConfiguration() {
         }
     }, []);
 
-    return { config, applicationId };
+    return { config, applicationId, setApplicationId };
 }

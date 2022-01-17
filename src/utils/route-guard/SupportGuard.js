@@ -15,7 +15,9 @@ import useConfiguration from 'hooks/useConfiguration';
 const SupportGuard = ({ children }) => {
     const { Moralis, isAuthenticated } = useMoralis();
     const navigate = useNavigate();
-    const { config } = useConfiguration();
+    const { config, applicationId, setApplicationId } = useConfiguration();
+
+    const getAppIdFromQueryParams = () => window.location.href.split('appId=')[1];
 
     const switchNetwork = async () => {
         const web3 = await Moralis.enableWeb3();
@@ -56,7 +58,9 @@ const SupportGuard = ({ children }) => {
 
     const validateBrowserSupport = () => {
         if (!window.ethereum) {
-            navigate('deeplink', { replace: true });
+            // Get applicationId
+            setApplicationId(getAppIdFromQueryParams());
+            navigate(`deeplink?appId=${getAppIdFromQueryParams()}`);
         }
     };
 

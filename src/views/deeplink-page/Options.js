@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
+import useConfiguration from 'hooks/useConfiguration';
 
 const images = [
     {
@@ -10,7 +11,7 @@ const images = [
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMOd2d8myB3Bo0lyvFmnZA2SbUPews6nbbmprWWRyTYnjo4Y9QvYwv3F-0rxUc6o3lLQ&usqp=CAU',
         title: 'Metamask',
         width: '40%',
-        deepLinkBase: 'https://metamask.app.link/dapp/'
+        deepLinkBase: 'https://metamask.app.link/dapp/app.physicalweb3.com'
     }
     // {
     //     url: '/static/images/buttons/burgers.jpg',
@@ -89,10 +90,11 @@ const ImageMarked = styled('span')(({ theme }) => ({
 }));
 
 export default function Options() {
+    const { applicationId } = useConfiguration();
     const getTargetUrl = (deepLinkBase) => {
         const currentUrl = window.location.href;
-        const dAppUrl = currentUrl.replace('http://', '').replace('https://', '').replace('deeplink', '');
-        const targetUrl = `${deepLinkBase}${dAppUrl}`;
+        const appId = window.location.href.split('appId=')[1];
+        const targetUrl = `${deepLinkBase}?appId=${appId}`;
         console.log(targetUrl);
         return targetUrl;
     };
@@ -101,6 +103,7 @@ export default function Options() {
         <Box sx={{ display: 'flex', flexWrap: 'wrap', minWidth: 300, width: '100%' }}>
             {images.map((image) => (
                 <ImageButton
+                    id={image.id}
                     focusRipple
                     key={image.title}
                     style={{

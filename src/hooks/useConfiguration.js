@@ -7,11 +7,11 @@ export default function useConfiguration() {
     const { Moralis } = useMoralis();
 
     const getAppIdFromQueryParams = () => {
-        console.log(window.location.href);
-        const urlParams = new URLSearchParams(window.location.href);
-        const appId = urlParams.get('appId');
-        console.log(appId);
-        return appId;
+        const comps = window.location.href.split('appId=');
+        if (comps.length > 1) {
+            return comps[1];
+        }
+        return null;
     };
 
     const loadConfigFromMoralis = async (appId) => {

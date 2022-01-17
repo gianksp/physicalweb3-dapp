@@ -447,8 +447,8 @@ const SmartContractTab = () => {
                     borderRadius: 2,
                     p: 2,
                     minHeight: 105,
-                    background: config.theme.primary,
-                    color: config.theme.secondary
+                    background: config?.theme?.primary,
+                    color: config?.theme?.secondary
                 }}
             >
                 <Typography fontSize="0.7em">

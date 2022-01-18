@@ -20,9 +20,13 @@ export default function useCovalent() {
         fetch(`https://api.covalenthq.com/v1/pricing/tickers/?quote-currency=USD&format=JSON&tickers=${target}&key=${apiK}`)
             .then((response) => response.json())
             .then((response) => {
-                const sym = response?.data?.items[0];
-                if (sym.contract_ticker_symbol.toLowerCase() === target) {
-                    setTicketPrice(sym.quote_rate);
+                try {
+                    const sym = response?.data?.items[0];
+                    if (sym.contract_ticker_symbol.toLowerCase() === target) {
+                        setTicketPrice(sym.quote_rate);
+                    }
+                } catch (e) {
+                    console.log(e);
                 }
             });
     }, [ticker]);

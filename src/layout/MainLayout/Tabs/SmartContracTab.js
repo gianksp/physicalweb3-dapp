@@ -422,7 +422,7 @@ const SmartContractTab = () => {
         return functions;
     };
 
-    const inputVal = (
+    const inputVal = config && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 105 }}>
                 <FormControl variant="standard" fullWidth>
@@ -439,7 +439,7 @@ const SmartContractTab = () => {
         </Grid>
     );
 
-    const usVal = (
+    const usVal = config && tickerPrice && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box
                 sx={{
@@ -447,8 +447,8 @@ const SmartContractTab = () => {
                     borderRadius: 2,
                     p: 2,
                     minHeight: 105,
-                    background: config?.theme?.primary,
-                    color: config?.theme?.secondary
+                    background: config ? config.theme.primary : '#fff',
+                    color: config ? config.theme.secondary : '#333'
                 }}
             >
                 <Typography fontSize="0.7em">

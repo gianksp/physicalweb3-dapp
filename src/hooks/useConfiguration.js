@@ -36,7 +36,7 @@ export default function useConfiguration() {
 
     useEffect(() => {
         const appId = getAppIdFromQueryParams();
-        if (appId) {
+        if (appId && appId !== 'undefined') {
             // Fron App Id
             console.log(`From app Id ${appId}`);
             setApplicationId(appId);

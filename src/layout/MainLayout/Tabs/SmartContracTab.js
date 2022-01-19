@@ -422,7 +422,7 @@ const SmartContractTab = () => {
         return functions;
     };
 
-    const inputVal = config && (
+    const inputVal = config && isAuthenticated && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 105 }}>
                 <FormControl variant="standard" fullWidth>
@@ -439,7 +439,7 @@ const SmartContractTab = () => {
         </Grid>
     );
 
-    const usVal = config && tickerPrice && (
+    const usVal = config && isAuthenticated && tickerPrice && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box
                 sx={{
@@ -459,9 +459,25 @@ const SmartContractTab = () => {
         </Grid>
     );
 
+    const myAccount = config && isAuthenticated && (
+        <Grid item xs={12} sx={{ p: 1 }}>
+            <Box
+                sx={{
+                    border: '1px solid #ddd',
+                    borderRadius: 2,
+                    p: 2,
+                    background: 'ivory'
+                }}
+            >
+                <Typography fontSize="1em">{user.get('ethAddress')}</Typography>
+            </Box>
+        </Grid>
+    );
+
     return (
         <Grid container>
             <Grid container>
+                {myAccount}
                 {inputVal}
                 {usVal}
             </Grid>

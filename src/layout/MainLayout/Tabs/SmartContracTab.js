@@ -239,7 +239,7 @@ const SmartContractTab = () => {
             const encodedFunction = web3.eth.abi.encodeFunctionCall(fn, fnValues);
             const transactionParameters = {
                 to: config.network.contract,
-                // from: user.get('ethAddress'),
+                from: user.get('ethAddress'),
                 data: encodedFunction
             };
 

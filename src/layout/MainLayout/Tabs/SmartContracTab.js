@@ -53,7 +53,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const SmartContractTab = () => {
     const { Moralis, user, isAuthenticated, logout, authenticate } = useMoralis();
-    const { config = {} } = useConfiguration();
+    const { config = {}, isCorrectNetwork } = useConfiguration();
     const [funcs, setFuncs] = useState([]);
     const [valueTransfer, setValueTransfer] = useState(0);
     const [getInputs, setInputs] = useState({});
@@ -423,7 +423,7 @@ const SmartContractTab = () => {
         return functions;
     };
 
-    const inputVal = config && isAuthenticated && (
+    const inputVal = config && isAuthenticated && isCorrectNetwork && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box sx={{ border: '1px solid #ddd', borderRadius: 2, p: 2, minHeight: 105 }}>
                 <FormControl variant="standard" fullWidth>
@@ -440,7 +440,7 @@ const SmartContractTab = () => {
         </Grid>
     );
 
-    const usVal = config && isAuthenticated && tickerPrice && (
+    const usVal = config && isAuthenticated && isCorrectNetwork && tickerPrice && (
         <Grid item xs={6} sx={{ p: 1 }}>
             <Box
                 sx={{
@@ -460,7 +460,7 @@ const SmartContractTab = () => {
         </Grid>
     );
 
-    const myAccount = config && isAuthenticated && (
+    const myAccount = config && isAuthenticated && isCorrectNetwork && (
         <Grid item xs={12} sx={{ p: 1, cursor: 'pointer' }} onClick={logout}>
             <Box
                 sx={{
@@ -478,7 +478,7 @@ const SmartContractTab = () => {
         </Grid>
     );
 
-    const loginPanel = config && !isAuthenticated && (
+    const loginPanel = config && isCorrectNetwork && !isAuthenticated && (
         <Grid item xs={12} sx={{ p: 1, textAlign: 'center' }}>
             <Button fullWidth variant="contained" onClick={authenticate} color="secondary">
                 LOG IN WITH METAMASK
@@ -486,15 +486,32 @@ const SmartContractTab = () => {
         </Grid>
     );
 
+    const switchPanel = config && !isCorrectNetwork && (
+        <Grid item xs={12} sx={{ p: 1 }}>
+            <Box
+                sx={{
+                    border: '1px solid #ddd',
+                    borderRadius: 2,
+                    p: 2,
+                    background: 'ivory',
+                    textAlign: 'center'
+                }}
+            >
+                <Typography fontSize="1.6em">Invalid Network, please switch to {config?.network?.name} and refresh</Typography>
+            </Box>
+        </Grid>
+    );
+
     return (
         <Grid container>
             <Grid container sx={{ width: '100vw' }}>
+                {switchPanel}
                 {loginPanel}
                 {myAccount}
                 {inputVal}
                 {usVal}
             </Grid>
-            {isAuthenticated && displayFunctions()}
+            {isAuthenticated && isCorrectNetwork && displayFunctions()}
         </Grid>
     );
 };

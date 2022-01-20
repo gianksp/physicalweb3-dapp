@@ -15,7 +15,7 @@ import useConfiguration from 'hooks/useConfiguration';
 const SupportGuard = ({ children }) => {
     const { Moralis, isAuthenticated } = useMoralis();
     const navigate = useNavigate();
-    const { config, applicationId, setApplicationId } = useConfiguration();
+    const { config, applicationId, setApplicationId, setCorrectNetwork } = useConfiguration();
 
     const getAppIdFromQueryParams = () => window.location.href.split('appId=')[1];
 
@@ -28,7 +28,9 @@ const SupportGuard = ({ children }) => {
                 params: [{ chainId: target }]
             });
             console.log('right chain again?');
+            setCorrectNetwork(true);
         } catch (error) {
+            setCorrectNetwork(false);
             console.log('trying switch');
             if (error.code === 4902) {
                 try {

@@ -4,6 +4,7 @@ import { useMoralis } from 'react-moralis';
 export default function useConfiguration() {
     const [config, loadConfig] = useState([]);
     const [applicationId, setApplicationId] = useState();
+    const [isCorrectNetwork, setCorrectNetwork] = useState(false);
     const { Moralis } = useMoralis();
 
     const getAppIdFromQueryParams = () => {
@@ -51,5 +52,15 @@ export default function useConfiguration() {
         }
     }, []);
 
-    return { config, applicationId, setApplicationId };
+    useEffect(async () => {
+        if (!config || !config.network) return;
+        if (!Moralis) return;
+        const web3Provider = await Moralis.enableWeb3();
+        if (!web3Provider) return;
+        const id = await web3Provider.eth.net.getId();
+        if (!id) return;
+        setCorrectNetwork(id === config.network.id);
+    }, [Moralis, config]);
+
+    return { config, applicationId, setApplicationId, isCorrectNetwork };
 }

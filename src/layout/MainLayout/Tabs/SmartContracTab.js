@@ -19,6 +19,7 @@ import Chip from '@mui/material/Chip';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import useCovalent from 'hooks/useCovalent';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Accordion = styled((props) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
     border: `1px solid ${theme.palette.divider}`,
@@ -51,7 +52,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 // ==============================|| SAMPLE PAGE ||============================== //
 
 const SmartContractTab = () => {
-    const { Moralis, user, isAuthenticated } = useMoralis();
+    const { Moralis, user, isAuthenticated, logout, authenticate } = useMoralis();
     const { config = {} } = useConfiguration();
     const [funcs, setFuncs] = useState([]);
     const [valueTransfer, setValueTransfer] = useState(0);
@@ -238,7 +239,7 @@ const SmartContractTab = () => {
             const encodedFunction = web3.eth.abi.encodeFunctionCall(fn, fnValues);
             const transactionParameters = {
                 to: config.network.contract,
-                from: user.get('ethAddress'),
+                // from: user.get('ethAddress'),
                 data: encodedFunction
             };
 
@@ -460,28 +461,40 @@ const SmartContractTab = () => {
     );
 
     const myAccount = config && isAuthenticated && (
-        <Grid item xs={12} sx={{ p: 1 }}>
+        <Grid item xs={12} sx={{ p: 1, cursor: 'pointer' }} onClick={logout}>
             <Box
                 sx={{
                     border: '1px solid #ddd',
                     borderRadius: 2,
                     p: 2,
-                    background: 'ivory'
+                    background: 'ivory',
+                    textAlign: 'center'
                 }}
             >
-                <Typography fontSize="1em">{user.get('ethAddress')}</Typography>
+                <Typography fontSize="1.6em">
+                    {trimAddress(user.get('ethAddress'))} <LogoutIcon />
+                </Typography>
             </Box>
+        </Grid>
+    );
+
+    const loginPanel = config && !isAuthenticated && (
+        <Grid item xs={12} sx={{ p: 1, textAlign: 'center' }}>
+            <Button fullWidth variant="contained" onClick={authenticate} color="secondary">
+                LOG IN WITH METAMASK
+            </Button>
         </Grid>
     );
 
     return (
         <Grid container>
-            <Grid container>
+            <Grid container sx={{ width: '100vw' }}>
+                {loginPanel}
                 {myAccount}
                 {inputVal}
                 {usVal}
             </Grid>
-            {displayFunctions()}
+            {isAuthenticated && displayFunctions()}
         </Grid>
     );
 };

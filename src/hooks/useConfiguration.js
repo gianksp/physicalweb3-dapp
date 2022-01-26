@@ -62,5 +62,5 @@ export default function useConfiguration() {
         setCorrectNetwork(id === config.network.id);
     }, [Moralis, config]);
 
-    return { config, applicationId, setApplicationId, isCorrectNetwork };
+    return { config, applicationId, setApplicationId, isCorrectNetwork, setCorrectNetwork };
 }

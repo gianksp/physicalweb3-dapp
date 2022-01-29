@@ -276,7 +276,7 @@ const SmartContractTab = () => {
         setResponse(fn.name, '');
         console.log('invoked read');
         const userInputs = getInputs[fn.name];
-        const fnValues = userInputs ? Object.values(userInputs) : [];
+        const fnValues = userInputs ? Object.values(userInputs).reverse() : [];
         let callStatus = {};
         try {
             setLoading(fn.name);
